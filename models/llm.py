@@ -1,15 +1,22 @@
-import openai
-import os
-
-openai.api_key = os.getenv("OPENAI_API_KEY")
+import requests
 
 class LLMInterface:
+    def __init__(self, model_name="llama2"):
+        self.model_name = model_name
+        self.api_url = "http://localhost:11434/api/generate"
+
     def respond(self, prompt):
         try:
-            completion = openai.ChatCompletion.create(
-                model="gpt-3.5-turbo",
-                messages=[{"role": "user", "content": prompt}]
-            )
-            return completion.choices[0].message["content"].strip()
+            response = requests.post(self.api_url, json={
+                "model": self.model_name,
+                "prompt": prompt,
+                "stream": False
+            })
+
+            if response.status_code == 200:
+                return response.json().get("response", "").strip()
+            else:
+                return f"(Error: {response.status_code} - {response.text})"
+
         except Exception as e:
             return f"(Error generating response: {e})"
