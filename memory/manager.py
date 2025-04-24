@@ -29,3 +29,28 @@ def find_recent_memories(n=5):
 
 def clear_all_memories():
     open(MEMORY_FILE, 'w').close()
+
+class MemoryManager:
+    def __init__(self, filepath):
+        self.filepath = filepath
+        # Ensure the file exists
+        if not os.path.exists(filepath):
+            with open(filepath, 'w') as f:
+                json.dump([], f)
+
+    def load(self):
+        try:
+            with open(self.filepath, 'r') as f:
+                return json.load(f)
+        except (json.JSONDecodeError, FileNotFoundError):
+            return []
+
+    def save(self, memory_entry):
+        memories = self.load()
+        memories.append(memory_entry)
+        with open(self.filepath, 'w') as f:
+            json.dump(memories, f, indent=2)
+
+    def find_recent(self, limit=10):
+        memories = self.load()
+        return sorted(memories, key=lambda m: m.get("timestamp", ""), reverse=True)[:limit]
