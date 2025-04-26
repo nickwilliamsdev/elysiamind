@@ -2,7 +2,7 @@ import os
 import json
 from datetime import datetime
 
-MEMORY_FILE = "memory/memories.jsonl"
+MEMORY_FILE = "data/memories.json"
 
 def ensure_memory_file_exists():
     os.makedirs(os.path.dirname(MEMORY_FILE), exist_ok=True)

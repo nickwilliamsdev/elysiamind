@@ -17,8 +17,17 @@ class Reflector:
 
         # Step 2: Choose a few meaningful ones
         selected = sorted(recent, key=lambda m: -m.get("significance", 0))[:max_memories]
-        summary = "\n\n".join([f"- {m['text']}" for m in selected])
+        summary_lines = []
+        for m in selected:
+            if "prompt" in m and "response" in m:
+                summary_lines.append(f"- Prompt: {m['prompt']}\n  Response: {m['response']}")
+            elif "text" in m:
+                summary_lines.append(f"- {m['text']}")
+            else:
+                summary_lines.append("- (Unrecognized memory format)")
 
+        summary = "\n\n".join(summary_lines)
+        #print(summary)  # Debugging line to check the summary
         # Step 3: Generate reflection using LLM
         reflection_prompt = (
             "Here are some memories from the last day:\n"
